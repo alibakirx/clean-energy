@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 declare global {
   interface Window {
@@ -28,7 +28,7 @@ interface WindParticle {
   color: number[];
 }
 
-const SimpleVisualization: React.FC = () => {
+const SimpleVisualization = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const p5InstanceRef = useRef<any>(null);
 

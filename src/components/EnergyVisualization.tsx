@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { UserControls } from '../types';
 
 declare global {
@@ -12,7 +12,7 @@ interface EnergyVisualizationProps {
   onEnergyDataUpdate: (data: { totalGeneration: number; renewablePercentage: number; efficiency: number }) => void;
 }
 
-const EnergyVisualization: React.FC<EnergyVisualizationProps> = ({ controls, onEnergyDataUpdate }) => {
+const EnergyVisualization = ({ controls, onEnergyDataUpdate }: EnergyVisualizationProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

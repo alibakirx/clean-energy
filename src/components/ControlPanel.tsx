@@ -1,4 +1,3 @@
-import React from 'react';
 import { UserControls } from '../types';
 
 interface ControlPanelProps {
@@ -11,11 +10,11 @@ interface ControlPanelProps {
   };
 }
 
-const ControlPanel: React.FC<ControlPanelProps> = ({
+const ControlPanel = ({
   controls,
   onControlChange,
   energyData
-}) => {
+}: ControlPanelProps) => {
   return (
     <div className="fixed top-4 left-4 z-10 control-panel w-80">
       <h2 className="text-xl font-bold mb-4 text-energy-green-400">

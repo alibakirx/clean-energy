@@ -1,4 +1,3 @@
-import React from 'react';
 import SimpleVisualization from './components/SimpleVisualization';
 
 function App() {
