@@ -355,27 +355,75 @@ const SimpleVisualization = () => {
             p.noStroke();
             
             if (timeOfDay >= 6 && timeOfDay <= 18) {
-              // Sun with corona
-              const sunGradient = p.drawingContext.createRadialGradient(x, y, 0, x, y, 100);
-              sunGradient.addColorStop(0, 'rgba(255, 255, 200, 0.8)');
-              sunGradient.addColorStop(0.2, 'rgba(255, 200, 100, 0.6)');
-              sunGradient.addColorStop(1, 'rgba(255, 150, 50, 0)');
-              p.drawingContext.fillStyle = sunGradient;
-              p.circle(x, y, 200);
+              // Sun outer glow
+              for (let i = 0; i < 3; i++) {
+                const glowSize = 120 + i * 40;
+                const glowOpacity = 0.3 - i * 0.1;
+                const sunGlow = p.drawingContext.createRadialGradient(x, y, 0, x, y, glowSize);
+                sunGlow.addColorStop(0, `rgba(255, 220, 100, ${glowOpacity})`);
+                sunGlow.addColorStop(0.3, `rgba(255, 180, 50, ${glowOpacity * 0.6})`);
+                sunGlow.addColorStop(1, 'rgba(255, 150, 50, 0)');
+                p.drawingContext.fillStyle = sunGlow;
+                p.circle(x, y, glowSize * 2);
+              }
               
-              // Sun core
-              p.fill(255, 255, 200, 200);
-              p.circle(x, y, 60);
+              // Sun rays
+              p.push();
+              p.translate(x, y);
+              p.rotate(p.frameCount * 0.002);
+              p.stroke(255, 240, 150, 120);
+              p.strokeWeight(2);
+              for (let i = 0; i < 16; i++) {
+                const rayAngle = (i / 16) * p.TWO_PI;
+                const innerRadius = 35;
+                const outerRadius = 70 + p.sin(p.frameCount * 0.05 + i) * 10;
+                
+                const x1 = p.cos(rayAngle) * innerRadius;
+                const y1 = p.sin(rayAngle) * innerRadius;
+                const x2 = p.cos(rayAngle) * outerRadius;
+                const y2 = p.sin(rayAngle) * outerRadius;
+                
+                p.line(x1, y1, x2, y2);
+              }
+              p.pop();
+              
+              // Sun main body gradient
+              const sunCore = p.drawingContext.createRadialGradient(x, y, 0, x, y, 35);
+              sunCore.addColorStop(0, 'rgba(255, 255, 240, 1)');
+              sunCore.addColorStop(0.4, 'rgba(255, 240, 180, 1)');
+              sunCore.addColorStop(0.8, 'rgba(255, 200, 100, 1)');
+              sunCore.addColorStop(1, 'rgba(255, 180, 80, 1)');
+              p.drawingContext.fillStyle = sunCore;
+              p.circle(x, y, 70);
+              
+              // Sun surface details
+              p.fill(255, 220, 120, 100);
+              for (let i = 0; i < 6; i++) {
+                const spotX = x + p.cos(i * p.PI/3 + p.frameCount * 0.001) * 15;
+                const spotY = y + p.sin(i * p.PI/3 + p.frameCount * 0.001) * 15;
+                p.circle(spotX, spotY, p.random(3, 8));
+              }
+              
             } else {
               // Moon with detailed surface
-              p.fill(220, 220, 200, 180);
-              p.circle(x, y, 50);
-              p.fill(200, 200, 180, 80);
+              const moonGradient = p.drawingContext.createRadialGradient(x - 10, y - 10, 0, x, y, 30);
+              moonGradient.addColorStop(0, 'rgba(240, 240, 220, 0.9)');
+              moonGradient.addColorStop(0.6, 'rgba(200, 200, 180, 0.8)');
+              moonGradient.addColorStop(1, 'rgba(160, 160, 140, 0.7)');
+              p.drawingContext.fillStyle = moonGradient;
+              p.circle(x, y, 60);
+              
+              // Moon craters
+              p.fill(180, 180, 160, 120);
               for (let i = 0; i < 8; i++) {
-                const craterX = x + p.cos(i * p.PI/4) * 15;
-                const craterY = y + p.sin(i * p.PI/4) * 15;
-                p.circle(craterX, craterY, p.random(5, 10));
+                const craterX = x + p.cos(i * p.PI/4) * p.random(8, 20);
+                const craterY = y + p.sin(i * p.PI/4) * p.random(8, 20);
+                p.circle(craterX, craterY, p.random(3, 8));
               }
+              
+              // Moon shadow
+              p.fill(140, 140, 120, 80);
+              p.arc(x, y, 60, 60, p.PI/4, p.PI + p.PI/4);
             }
             p.pop();
           }
@@ -383,22 +431,81 @@ const SimpleVisualization = () => {
           function drawClouds() {
             p.push();
             p.noStroke();
-            const cloudOpacity = (timeOfDay >= 6 && timeOfDay <= 18) ? 100 : 50; // Reduced opacity
+            const isDaytime = timeOfDay >= 6 && timeOfDay <= 18;
+            const baseOpacity = isDaytime ? 0.9 : 0.4;
             
-            for (let i = 0; i < 10; i++) {
-              const x = (p.frameCount * 0.2 + i * 200) % (p.width + 400) - 200;
-              const y = p.height * 0.3 + p.sin(i * 0.5) * 50;
-              const cloudSize = 100 + p.sin(i * 0.7) * 30;
-              
-              const cloudGradient = p.drawingContext.createRadialGradient(x, y, 0, x, y, cloudSize);
-              cloudGradient.addColorStop(0, `rgba(255, 255, 255, ${cloudOpacity * 0.6/255})`);
-              cloudGradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
-              p.drawingContext.fillStyle = cloudGradient;
-              
-              p.circle(x, y, cloudSize * 2);
-              p.circle(x + cloudSize * 0.5, y - cloudSize * 0.2, cloudSize * 1.5);
-              p.circle(x - cloudSize * 0.5, y - cloudSize * 0.1, cloudSize * 1.7);
-            }
+            // Different cloud layers for depth
+            const cloudLayers = [
+              { count: 6, speed: 0.15, yRange: [0.15, 0.35], size: [80, 120], opacity: baseOpacity * 0.6 },
+              { count: 8, speed: 0.25, yRange: [0.25, 0.45], size: [60, 100], opacity: baseOpacity * 0.8 },
+              { count: 5, speed: 0.35, yRange: [0.35, 0.55], size: [100, 140], opacity: baseOpacity }
+            ];
+            
+            cloudLayers.forEach((layer, layerIndex) => {
+              for (let i = 0; i < layer.count; i++) {
+                const cloudSeed = i + layerIndex * 100;
+                const x = (p.frameCount * layer.speed + cloudSeed * 180) % (p.width + 600) - 300;
+                const y = p.height * (layer.yRange[0] + (layer.yRange[1] - layer.yRange[0]) * p.noise(cloudSeed * 0.1));
+                
+                // Cloud size variation
+                const baseSize = p.map(p.noise(cloudSeed * 0.05, p.frameCount * 0.001), 0, 1, layer.size[0], layer.size[1]);
+                
+                // Cloud color based on time of day
+                let cloudR = 255, cloudG = 255, cloudB = 255;
+                if (timeOfDay < 7 || timeOfDay > 19) {
+                  // Night clouds - bluish tint
+                  cloudR = 200; cloudG = 210; cloudB = 230;
+                } else if (timeOfDay < 8 || timeOfDay > 17) {
+                  // Dawn/dusk clouds - orange/pink tint
+                  cloudR = 255; cloudG = 230; cloudB = 200;
+                }
+                
+                // Create fluffy cloud shape with multiple overlapping circles
+                const cloudParts = [
+                  { offsetX: 0, offsetY: 0, scale: 1.0 },
+                  { offsetX: baseSize * 0.4, offsetY: -baseSize * 0.1, scale: 0.8 },
+                  { offsetX: -baseSize * 0.4, offsetY: -baseSize * 0.05, scale: 0.9 },
+                  { offsetX: baseSize * 0.2, offsetY: baseSize * 0.2, scale: 0.7 },
+                  { offsetX: -baseSize * 0.2, offsetY: baseSize * 0.15, scale: 0.6 },
+                  { offsetX: baseSize * 0.6, offsetY: baseSize * 0.1, scale: 0.5 },
+                  { offsetX: -baseSize * 0.6, offsetY: baseSize * 0.05, scale: 0.55 }
+                ];
+                
+                cloudParts.forEach((part, partIndex) => {
+                  const partX = x + part.offsetX;
+                  const partY = y + part.offsetY;
+                  const partSize = baseSize * part.scale;
+                  
+                  // Animated size variation for breathing effect
+                  const breathe = 1 + p.sin(p.frameCount * 0.01 + cloudSeed + partIndex) * 0.05;
+                  const finalSize = partSize * breathe;
+                  
+                  // Create gradient for each cloud part
+                  const cloudGradient = p.drawingContext.createRadialGradient(
+                    partX, partY, 0, 
+                    partX, partY, finalSize * 0.8
+                  );
+                  
+                  const centerOpacity = layer.opacity * (0.8 + partIndex * 0.05);
+                  const edgeOpacity = layer.opacity * 0.1;
+                  
+                  cloudGradient.addColorStop(0, `rgba(${cloudR}, ${cloudG}, ${cloudB}, ${centerOpacity})`);
+                  cloudGradient.addColorStop(0.4, `rgba(${cloudR}, ${cloudG}, ${cloudB}, ${centerOpacity * 0.7})`);
+                  cloudGradient.addColorStop(0.8, `rgba(${cloudR}, ${cloudG}, ${cloudB}, ${edgeOpacity})`);
+                  cloudGradient.addColorStop(1, `rgba(${cloudR}, ${cloudG}, ${cloudB}, 0)`);
+                  
+                  p.drawingContext.fillStyle = cloudGradient;
+                  p.circle(partX, partY, finalSize * 2);
+                });
+                
+                // Add subtle cloud shadows if daytime
+                if (isDaytime && layerIndex === cloudLayers.length - 1) {
+                  p.fill(150, 150, 150, 30);
+                  p.circle(x + 5, y + baseSize * 0.3, baseSize * 1.5);
+                }
+              }
+            });
+            
             p.pop();
           }
 
@@ -408,8 +515,8 @@ const SimpleVisualization = () => {
             p.noStroke();
             for (let i = 0; i < 3; i++) {
               const mountainColor = p.lerpColor(
-                p.color(70, 90, 110, 80), // Reduced alpha
-                p.color(40, 50, 70, 60),
+                p.color(140, 130, 120, 80), // Darker gray-brown color with reduced alpha
+                p.color(110, 100, 90, 60), // Even darker gray-brown with reduced alpha
                 i / 2
               );
               p.fill(mountainColor);
