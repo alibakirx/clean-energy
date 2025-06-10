@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    @apply bg-gray-900 text-white font-sans antialiased;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #root {
+    @apply w-full h-screen;
+  }
+}
+
+@layer components {
+  .energy-tooltip {
+    @apply bg-black/80 text-white px-3 py-2 rounded-lg text-sm shadow-lg backdrop-blur-sm;
+    @apply border border-energy-green-500/30;
+  }
+
+  .control-panel {
+    @apply bg-black/60 backdrop-blur-md rounded-xl p-4 border border-white/20;
+  }
+
+  .energy-button {
+    @apply px-4 py-2 rounded-lg transition-all duration-300 font-medium;
+    @apply hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .solar-button {
+    @apply bg-solar-yellow-500 text-black hover:bg-solar-yellow-400;
+    @apply focus:ring-solar-yellow-300;
+  }
+
+  .wind-button {
+    @apply bg-wind-blue-500 text-white hover:bg-wind-blue-400;
+    @apply focus:ring-wind-blue-300;
+  }
+
+  .hydro-button {
+    @apply bg-blue-500 text-white hover:bg-blue-400;
+    @apply focus:ring-blue-300;
+  }
+
+  .energy-slider {
+    @apply w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer;
+  }
+
+  .energy-slider::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 bg-energy-green-500 rounded-full cursor-pointer;
+    @apply hover:bg-energy-green-400 transition-colors;
+  }
+
+  .energy-slider::-moz-range-thumb {
+    @apply w-4 h-4 bg-energy-green-500 rounded-full cursor-pointer border-none;
+    @apply hover:bg-energy-green-400 transition-colors;
+  }
+} 
